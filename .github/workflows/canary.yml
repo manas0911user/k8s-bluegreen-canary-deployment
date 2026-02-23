@@ -1,0 +1,54 @@
+name: Auto-Canary-Pipeline (FREE)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # 2️⃣ Create local Kubernetes cluster (FREE)
+      - name: Setup KIND cluster
+        uses: helm/kind-action@v1
+
+      # 3️⃣ Build Docker images
+      - name: Build Images
+        run: |
+          docker build -t blue-nginx:1 ./nginx-html
+          docker build -t green-nginx:1 ./nginx-html
+
+      # 4️⃣ Load images into cluster
+      - name: Load Images
+        run: |
+          kind load docker-image blue-nginx:1
+          kind load docker-image green-nginx:1
+
+      # 5️⃣ Deploy BLUE (stable)
+      - name: Deploy Blue Version
+        run: |
+          kubectl apply -f kubernetes/service.yaml
+          kubectl apply -f kubernetes/blue-deploy.yaml
+
+      # 6️⃣ Deploy GREEN Canary
+      - name: Deploy Green Canary (20%)
+        run: |
+          kubectl apply -f kubernetes/green-deploy.yaml
+
+      # 7️⃣ Simulated Health Check
+      - name: Canary Health Check
+        run: |
+          echo "🔍 Checking Canary Pods..."
+          kubectl get pods
+
+      # 8️⃣ AUTO PROMOTE Canary → Stable
+      - name: Promote Canary
+        run: |
+          echo "🚀 Promoting Green to Stable..."
+          kubectl delete -f kubernetes/blue-deploy.yaml
