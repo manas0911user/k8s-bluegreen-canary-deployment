@@ -25,10 +25,12 @@ jobs:
           docker build -t green-nginx:1 ./nginx-html
 
       # 4️⃣ Load images into cluster
-      - name: Load Images
+      - name: Load Images into KIND
         run: |
-          kind load docker-image blue-nginx:1
-          kind load docker-image green-nginx:1
+          kind get clusters
+          kubectl cluster-info
+          kind load docker-image blue-nginx:1 --name kind
+          kind load docker-image green-nginx:1 --name kind
 
       # 5️⃣ Deploy BLUE (stable)
       - name: Deploy Blue Version
