@@ -1,0 +1,27 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node (if future add frontend)
+node_modules/
+
+# Docker
+*.tar
+*.log
+
+# Kubernetes temp files
+*.swp
+
+# Env files
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# Minikube / local kube
+.kube/
+
+# Build cache
+dist/
+build/
