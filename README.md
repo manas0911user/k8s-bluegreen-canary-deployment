@@ -60,20 +60,45 @@ Progressive delivery strategies like Blue-Green and Canary allow:
 
 ![BlueGreen](img/blue-green-deployment-process.gif)
 
-> Blue-Green deployment maintains two environments.
+> Blue-Green deployment is a zero-downtime release strategy where two identical environments run at the same time..
 
-### Terminology
+🧠 Simple Understanding
 
-* **Blue Environment** → Stable production version
-* **Green Environment** → New candidate version
+Imagine your application has two versions:
 
-Traffic shifts only after validation.
+🔵 Blue → Current stable version (users are using this)
 
-### Benefits
+🟢 Green → New updated version (testing phase)
 
-* Zero downtime deployments
-* Instant rollback
-* Production-level safety
+Instead of replacing the old version instantly:
+
+New Green version is deployed alongside Blue.
+
+Both versions run simultaneously.
+
+After testing and validation, traffic switches to Green.
+
+Blue version can be removed or kept for rollback.
+
+⚙️ How it Works in Kubernetes
+
+Two deployments exist:
+
+nginx-deployment (Blue)
+
+nginx-green (Green)
+
+A single Kubernetes Service controls traffic.
+
+Switching labels or updating service routing moves traffic safely.
+
+✅ Advantages
+
+Zero downtime deployments
+
+Instant rollback capability
+
+Safe production testing
 
 ---
 
@@ -81,20 +106,49 @@ Traffic shifts only after validation.
 
 ![Canary](img/canary-deploy.gif)
 
-> Canary deployment releases updates gradually.
+> Canary deployment releases a new version gradually instead of switching all users at once.
 
-Instead of switching all users at once:
+🧠 Real-World Analogy
 
-* Small percentage → new version
-* Monitor behaviour
-* Promote or rollback
+Before launching a new feature to everyone:
 
-### Why Canary?
+Release it to a small group of users first.
 
-* Detect issues early
-* Reduce blast radius
-* Improve release confidence
+Monitor performance and errors.
 
+If everything looks good → release to all users.
+
+That small test release is called a Canary.
+
+⚙️ How it Works in Kubernetes
+
+Instead of replacing Blue completely:
+
+Some pods run the stable version
+
+Few pods run the new Canary version
+
+Traffic is distributed between them
+
+Example:
+
+80% users → Stable version
+
+20% users → Canary version
+
+If Canary fails:
+
+👉 rollback instantly without affecting most users.
+
+✅ Advantages
+
+Reduced deployment risk
+
+Early bug detection
+
+Real production validation
+
+Smooth progressive delivery
 ---
 
 # 🏗️ Architecture Flow
@@ -364,4 +418,4 @@ img/canary-deploy.gif
 
 # 📜 License
 
-MIT License — see LICENSE.md
+MIT License — see [LICENSE](./LICENSE.md)
